@@ -1,0 +1,13 @@
+---
+- name: Install Japanese module
+  apt:
+    name:
+      - language-pack-ja-base
+      - language-pack-ja
+
+- name: Set locale
+  shell: localectl set-locale LANG=ja_JP.UTF-8 LANGUAGE="ja_JP:ja"
+
+### Keymap not found error
+# - name: Change keymap to Japanese 106
+#   shell: localectl set-keymap jp106

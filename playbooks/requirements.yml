@@ -1,0 +1,6 @@
+---
+roles:
+  - stuvusit.systemd-timesyncd
+  - geerlingguy.docker
+
+collections:

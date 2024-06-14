@@ -1,0 +1,24 @@
+#
+# Docker host configuration
+#
+# server timezone
+timesync_timezone: Asia/Tokyo
+timesync_ntp_hosts:
+  - ntp.nict.jp
+
+#
+# Docker container configuration
+#
+docker_container_timezone: Asia/Tokyo
+
+#
+# Docker host configuration
+#
+docker_host_config_root: /docker
+
+# PHP-FPM configuration
+php_fpm_max_children: 10
+php_fpm_start_servers: 5
+php_fpm_min_spare_servers: 5
+php_fpm_max_spare_servers: 10
+php_fpm_max_requests: 100

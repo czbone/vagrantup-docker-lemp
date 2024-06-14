@@ -1,0 +1,57 @@
+- hosts: all
+  vars_files:
+    - vars/main.yml
+
+  vars:
+    default_domain_name: 'example.com'
+    db_root_password: 'root_password'
+
+    # Webアプリケーションディレクトリ
+    www_document_root: '{{ docker_host_config_root }}/public_html' # WWWドキュメントルート
+
+    # PHPサンプルプログラム用
+    db_host: 'mariadb'  # MariaDBのDockerコンテナ名
+    sample_db_name: 'my_database'
+    sample_db_user: 'my_user'
+    sample_db_password: 'my_password'
+
+  environment:
+    MARIADB_ROOT_PASSWORD: '{{ db_root_password }}'
+    MARIADB_DATABASE: '{{ sample_db_name }}'
+    MARIADB_USER: '{{ sample_db_user }}'
+    MARIADB_PASSWORD: '{{ sample_db_password }}'
+
+  roles:
+    - stuvusit.systemd-timesyncd
+    - geerlingguy.docker
+
+  tasks:
+    - name: Install minimal command
+      apt:
+        name:
+          - zip
+          - unzip
+
+    - name: Create Japanese environment
+      import_tasks: ./tasks/japanese.yml
+
+    #
+    # Dockerコンテナの設定ファイル作成
+    #
+    - name: Create Docker container(mariadb)
+      import_tasks: ./tasks/mariadb.yml
+
+    - name: Create Docker container(php)
+      import_tasks: ./tasks/php.yml
+
+    - name: Create Docker container(nginx)
+      import_tasks: ./tasks/nginx.yml
+
+    #
+    # Docker Compose起動
+    #
+    - name: Build LEMP containers by Docker Compose
+      community.docker.docker_compose_v2:
+        project_src: 'containers'
+        files:
+          - docker-compose.yml

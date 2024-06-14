@@ -1,0 +1,43 @@
+#
+# PHP設定ファイル作成
+#
+- name: Create PHP conf directory
+  file: path='{{ docker_host_config_root }}/php' state=directory owner=root group=root mode=0755
+- name: Copy php.ini
+  copy: src='./containers/php/files/php.ini' dest='{{ docker_host_config_root }}/php/php.ini' owner=root group=root mode=0644
+- name: Create PHP-FPM conf directory
+  file: path='{{ docker_host_config_root }}/php/php-fpm.d' state=directory owner=root group=root mode=0755
+- name: Create PHP-FPM configuration
+  template: src='./containers/php/templates/www.conf.j2' dest='{{ docker_host_config_root }}/php/php-fpm.d/www.conf' owner=root group=root mode=0644
+
+#
+# PHPサンプルプログラム配置
+#
+- name: Create www directory
+  file: path='{{ www_document_root }}' state=directory owner=root group=root mode=0755
+- name: Copy sample PHP scripts
+  template:
+    src: "./containers/php/templates/sample/{{ item }}.j2"
+    dest: "{{ www_document_root }}/{{ item }}"
+  with_items:
+    - index.php
+    - index2.php
+
+#
+# Dockerfile生成
+#
+- name: Create build directory
+  file:
+    path: '{{ docker_host_config_root }}/containers/php/build'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create Dockerfile
+  template:
+    src: './containers/php/templates/Dockerfile.j2'
+    dest: '{{ docker_host_config_root }}/containers/php/build/Dockerfile'
+    owner: root
+    group: root
+    mode: '0644'

@@ -1,0 +1,46 @@
+services:
+  php:
+    build: '${DOCKE_HOST_CONFIG_ROOT:?err}/containers/php/build'
+    restart: always
+    container_name: php
+    depends_on:
+      - mariadb
+    ports:
+      - "9000:9000"
+    volumes:
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/public_html:/var/www/html:ro'   # www directory
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/php/php.ini:/usr/local/etc/php/conf.d/my.ini:ro'
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/php/php-fpm.d/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro'
+
+  nginx:
+    build: '${DOCKE_HOST_CONFIG_ROOT:?err}/containers/nginx/build'
+    container_name: nginx
+    restart: always
+    depends_on:
+      - php
+      - mariadb
+    ports:
+      - "80:80"
+      - "433:433"
+    volumes:
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/public_html:/var/www/html:ro'   # www directory
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/log/nginx:/var/log/nginx' # log directroy
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro'
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/nginx/conf.d:/etc/nginx/conf.d:ro'
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/nginx/sites-available:/etc/nginx/sites-available:ro'
+
+  mariadb:
+    build: '${DOCKE_HOST_CONFIG_ROOT:?err}/containers/mariadb/build'
+    restart: always
+    container_name: mariadb
+    ports:
+      - '3306:3306'
+    volumes:
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/mariadb/data:/var/lib/mysql'
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/mariadb/custom.cnf:/etc/mysql/conf.d/custom.cnf:ro'
+      - '${DOCKE_HOST_CONFIG_ROOT:?err}/mariadb/init.sql:/docker-entrypoint-initdb.d/init.sql:ro'
+    environment:
+      MARIADB_ROOT_PASSWORD: '${MARIADB_ROOT_PASSWORD}'
+      MARIADB_DATABASE: '${MARIADB_DATABASE}'
+      MARIADB_USER: '${MARIADB_USER}'
+      MARIADB_PASSWORD: '${MARIADB_PASSWORD}'

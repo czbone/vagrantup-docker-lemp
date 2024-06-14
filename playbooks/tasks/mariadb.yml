@@ -1,0 +1,28 @@
+#
+# MariaDB設定ファイル作成
+#
+- name: Create MariaDB data directory
+  file: path='{{ docker_host_config_root }}/mariadb/data' state=directory owner=root group=root mode=0755
+- name: Copy MariaDB conf file
+  copy: src='./containers/mariadb/files/custom.cnf' dest='{{ docker_host_config_root }}/mariadb/custom.cnf' owner=root group=root mode=0644
+- name: Copy DB initialize file
+  copy: src='./containers/mariadb/files/init.sql' dest='{{ docker_host_config_root }}/mariadb/init.sql' owner=root group=root mode=0644
+
+#
+# Dockerfile生成
+#
+- name: Create build directory
+  file:
+    path: '{{ docker_host_config_root }}/containers/mariadb/build'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create Dockerfile
+  template:
+    src: './containers/mariadb/templates/Dockerfile.j2'
+    dest: '{{ docker_host_config_root }}/containers/mariadb/build/Dockerfile'
+    owner: root
+    group: root
+    mode: '0644'

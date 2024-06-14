@@ -1,0 +1,32 @@
+#
+# Nginx設定ファイル作成
+#
+- name: Create Nginx conf directory
+  file: path='{{ docker_host_config_root }}/nginx/conf.d' state=directory owner=root group=root mode=0755
+- name: Create multi domain site directory
+  file: path='{{ docker_host_config_root }}/nginx/sites-available' state=directory owner=root group=root mode=0755
+- name: Copy nginx.conf
+  copy: src='./containers/nginx/files/nginx.conf' dest='{{ docker_host_config_root }}/nginx/nginx.conf' owner=root group=root mode=0644
+- name: Create default site configuration
+  template: src='./containers/nginx/templates/default.conf.j2' dest='{{ docker_host_config_root }}/nginx/conf.d/default.conf' owner=root group=root mode=0644
+- name: Configure Nginx log rotation
+  template: src='./containers/nginx/templates/logrotate_nginx.j2' dest='/etc/logrotate.d/docker-nginx' owner=root group=root mode=0644
+
+#
+# Dockerfile生成
+#
+- name: Create build directory
+  file:
+    path: '{{ docker_host_config_root }}/containers/nginx/build'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create Dockerfile
+  template:
+    src: './containers/nginx/templates/Dockerfile.j2'
+    dest: '{{ docker_host_config_root }}/containers/nginx/build/Dockerfile'
+    owner: root
+    group: root
+    mode: '0644'
