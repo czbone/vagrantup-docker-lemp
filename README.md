@@ -26,6 +26,18 @@ Execute command in cosole.
 vagrant up
 ```
 
+## Sample script
+
+Sample PHP scripts are available for web browser.
+
+- index.php
+- index2.php
+
+```bash
+http://192.168.33.10/
+http://192.168.33.10/index2.php
+```
+
 ## License
 
 [MIT](./LICENSE)
