@@ -1,8 +1,9 @@
 # Build up Docker LEMP stack by vagrant-up command
 
-Once execute **vagrant up** command, launch server and build docker environment by Ansible.
+Once execute `vagrant up` command, launch server and build Docker environment by Ansible.
 Letest version LEMP stack are installed at building.
-current example:
+
+Current version example:
 
 - Ansible v2.16.7
 - Docker v26.1.4
@@ -13,7 +14,7 @@ current example:
 
 ## Environment
 
-**vagrant up** command can be enabled.
+`vagrant up` command can be enabled.
 
 - Vagrant
 - VirtualBox
